@@ -78,8 +78,13 @@ If a device stops answering, unplug and replug it.
 * The driver runs in the 64-bit wineserver; the Unix library is built for x86_64
   only, so a pure 32-bit prefix is not supported.
 
-Run the application through `scripts/run.sh`; a plain `wine app.exe` does not use the
-patched modules. The patched driver is loaded by Wine's background services when they
+`install.sh` also installs a small `wine` wrapper into `~/.local/bin` (first in `PATH`).
+It sets `WINEDLLPATH` and the `winusb` override for every `wine` command, so a plain
+`wine app.exe` works as well as `scripts/run.sh`. Without it, a `wine` started without
+those variables would start Wine's services without the patched driver's library and
+USB would stop working for every program in that prefix (`err:wineusb:DriverEntry
+Failed to initialize Unix library`). Skip it with `WRAPPER_DIR= scripts/install.sh`;
+`uninstall.sh` removes it. The patched driver is loaded by Wine's background services when they
 start, so if Wine was already running in the prefix without it, `run.sh` stops with a
 message: run `wineserver -k` (closes all Wine programs in that prefix) or use
 `WINUSB_RESTART=1 scripts/run.sh`. After a Wine package update, run `scripts/install.sh` again.

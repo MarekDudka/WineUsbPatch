@@ -29,5 +29,15 @@ if i >= 0:
     b[i:i+16] = b'Wine patched DLL'
 open(sys.argv[2], 'wb').write(b)
 PY
+# Wrapper so that a plain `wine ...` also works (see wine-wrapper.sh). It is placed
+# first in PATH (~/.local/bin); set WRAPPER_DIR= (empty) to skip it.
+WRAPPER_DIR="${WRAPPER_DIR-$HOME/.local/bin}"
+if [ -n "$WRAPPER_DIR" ]; then
+    REAL_WINE="$(PATH="${PATH//$WRAPPER_DIR:/}" command -v wine)"
+    mkdir -p "$WRAPPER_DIR"
+    sed -e "s|@WINUSB_LIB@|$WINUSB_LIB|" -e "s|@REAL_WINE@|$REAL_WINE|" "$HERE/wine-wrapper.sh" > "$WRAPPER_DIR/wine"
+    chmod +x "$WRAPPER_DIR/wine"
+    echo "Wrapper installed: $WRAPPER_DIR/wine -> $REAL_WINE"
+fi
 wineserver -k 2>/dev/null || true
-echo "Installed. Start the application with scripts/run.sh"
+echo "Installed. Start the application with scripts/run.sh, or plain: wine $APP_EXE"
