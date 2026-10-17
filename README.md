@@ -79,7 +79,10 @@ If a device stops answering, unplug and replug it.
   only, so a pure 32-bit prefix is not supported.
 
 Run the application through `scripts/run.sh`; a plain `wine app.exe` does not use the
-patched modules. After a Wine package update, run `scripts/install.sh` again.
+patched modules. The patched driver is loaded by Wine's background services when they
+start, so if Wine was already running in the prefix without it, `run.sh` stops with a
+message: run `wineserver -k` (closes all Wine programs in that prefix) or use
+`WINUSB_RESTART=1 scripts/run.sh`. After a Wine package update, run `scripts/install.sh` again.
 
 ## Limitations
 
